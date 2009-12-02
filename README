@@ -1,0 +1,107 @@
+=============
+django-tagcon
+=============
+
+Django-Tagcon is a template tag constructor library for Django.  It supports a
+range of features to make writing template tags easier:
+
+- Syntax modeled on Django's friendly syntaxes for models and forms
+
+- Standardized argument handling -- never write tag boilerplate again!
+
+- Positional and optional arguments
+
+- Required arguments and argument defaults
+
+- Comma-separated sequence arguments (e.g., ``1, 2, 3``)
+
+- Flag arguments (that take no value)
+
+- Argument validation support (``clean`` methods similar to forms)
+
+- Automatic tag naming based on the class name (with optional override)
+
+- Automatic tag registration with the module's ``register`` Library
+
+- Easy resolution of context variable arguments, including filters
+
+- Support for yielding strings from the ``render`` method
+
+
+Installation
+============
+
+Just drop ``tagcon.py`` somewhere on Python's module path.
+
+Please note that this library is developed against Django's Subversion trunk,
+as that's what The Onion's internal Django branch is based upon; it *should*
+work in the latest formal release of Django, though, and the author considers
+it a bug if it doesn't.
+
+
+Example
+=======
+
+A simple example with a single optional argument::
+
+    from django.contrib.auth.models import User
+    from django.template import Library
+    import tagcon
+
+    register = Library()
+
+    class UserListTag(tagcon.TemplateTag):
+        limit = tagcon.IntegerArg(default=10)
+
+        def render(self, context):
+            self.resolve(context)
+            yield "<ul>"
+            for user in User.objects.all()[:self.args.limit]:
+                yield "<li>%s</li>" % (user.username,)
+            yield "</ul>"
+
+And then, in a template (after loading the library)::
+
+    {% user_list %}
+
+or::
+
+    {% user_list limit 20 %}
+
+
+History
+=======
+
+The idea for a new, less painfully verbose and more consistent template tag
+syntax for Django came up a few years ago at the Lawrence Journal-World, where
+the author first implemented what he then called "newtags".  Newtags was a
+modification of the template-handling code in LJW's internal Django branch; the
+syntax was modeled somewhat after Django's model syntax, as this seemed like a
+natural fit.  As this was the Dark Age around Django 0.91, the implementation
+was eventually abandoned and became impossibly out of sync with upstream
+Django.
+
+A few years later the author found himself at The Onion, helping to expand and
+manage a Django-based library that included an increasing number of template
+tags.  He decided to again write a library for easier template tag construction
+-- but this time based upon modern Django, and implemented as a separate
+library.
+
+
+To-Do
+=====
+
+Lots, including documentation and proper tests.  (We *are* using this code in
+production at The Onion, though, for what that's worth.)  Unlike most other
+tools that I've worked on over time and never released for want of polishing, I
+figured it was better to just push it out first and polish later.
+
+In particular, I'm not entirely comfortable with the underscore syntax to
+denote positional arguments; I'm open to better ideas there.
+
+
+Contact
+=======
+
+- Tom Tobin <korpios@korpios.com>
+- "korpios" on GitHub
