@@ -3,6 +3,8 @@ tagcon: a template tag constructor library for Django
 
 Based on the syntax and implementation of Django's Model and Form classes.
 """
+from __future__ import absolute_import
+
 import datetime
 import re
 import sys
