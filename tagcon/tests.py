@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.template import Library, Template, Context, add_to_builtins,\
-        TemplateSyntaxError
+        TemplateSyntaxError, VariableDoesNotExist
 import tagcon
 register = Library()
 
@@ -67,7 +67,25 @@ class TagCreationTests(TestCase):
                           '{% no_argument limit 25 %}')
 
     def test_argument_type(self):
-        t = Template('{% argument_type age 101 handle alice %}')
-        print t.render(Context())
+        """defining argument type has some effect"""
 
+        render = lambda t: Template(t).render(Context())
+
+        t = Template('{% argument_type age 101 handle "alice" %}')
+        self.assertEqual(t.render(Context()), 'alice is 101')
+
+        # IntegerArg.clean calls int(value) to convert "101" to 101
+        t = Template('{% argument_type age "101" handle "alice" %}')
+        self.assertEqual(t.render(Context()), 'alice is 101')
+
+        # IntegerArg.clean will choke on the string
+        self.assertRaises(tagcon.TemplateTagValidationError,
+                          render,
+                          '{% argument_type age "101b" handle "alice" %}')
+
+        # will not find a var named alice in the context
+        try:
+            render('{% argument_type age "101" handle alice %}')
+        except TemplateSyntaxError, e:
+            self.assertTrue(isinstance(e.exc_info[1], VariableDoesNotExist))
 
