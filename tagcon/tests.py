@@ -30,24 +30,25 @@ class NoArgumentTag(tagcon.TemplateTag):
 
 class ArgumentTypeTag(tagcon.TemplateTag):
 
-    age = tagcon.IntegerArg()
-    name_ = tagcon.StringArg()
+    age = tagcon.IntegerArg(null=True)
+    name_ = tagcon.StringArg(null=True)
     url = tagcon.ModelInstanceArg(model=Link, required=False,
                                         null=True)
 
     def render(self, context):
         self.resolve(context)
-        str = '%s %d' % (self.args.name, self.args.age)
-        if self.args.url is not None:
-            str += ' %s' % self.args.url
-        return str
+        order = 'name age url'.split()
+        return ' '.join([str(self.args[x]) for x in order if self.args[x] is not
+                         None])
 
 add_to_builtins(KeywordTag.__module__)
 add_to_builtins(NoArgumentTag.__module__)
 add_to_builtins(ArgumentTypeTag.__module__)
 
+render = lambda t: Template(t).render(Context())
 
-class TagCreationTests(TestCase):
+
+class TagExecutionTests(TestCase):
 
     def test_no_args(self):
         """A tag with keyword arguments works with or without the argument"""
@@ -69,43 +70,51 @@ class TagCreationTests(TestCase):
                           Template,
                           "{% keyword limit='25' %}")
 
-        # i can't remember which one (url perhaps?) but there was a tag that
-        # worked with single quotes but not double quotes and so we check both
-        self.assertRaises(TemplateSyntaxError,
-                          Template,
-                          '{% keyword limit="25" %}')
-
     def test_handle_args(self):
         """tags with no arguments take no arguments"""
         self.assertRaises(TemplateSyntaxError,
                           Template,
-                          '{% no_argument limit 25 %}')
+                          '{% no_argument this fails %}')
 
-    def test_argument_type(self):
-        """defining argument type has some effect"""
 
-        render = lambda t: Template(t).render(Context())
+class TestArgumentTypes(TestCase):
 
-        t = Template('{% argument_type age 101 name "alice" %}')
-        self.assertEqual(t.render(Context()), 'alice 101')
+    def test_model_instance_arg(self):
+        t = Template('{% argument_type url object %}')
+        object = Link(url='http://bing.com')
+        c = Context({'object': object})
+        self.assertEqual(t.render(c), object.__unicode__())
 
-        # IntegerArg.clean calls int(value) to convert "101" to 101
-        t = Template('{% argument_type age "23" name "bob" %}')
-        self.assertEqual(t.render(Context()), 'bob 23')
+        c = Context({'object': int()})
+        self.assertRaises(tagcon.TemplateTagValidationError,
+                          t.render,
+                          c)
+
+    def test_integer_arg(self):
+        t = Template('{% argument_type age 101 %}')
+        self.assertEqual(t.render(Context()), '101')
+
+        # IntegerArg.clean calls int(value) to convert "23" to 23
+        t = Template('{% argument_type age "23" %}')
+        self.assertEqual(t.render(Context()), '23')
 
         # IntegerArg.clean will choke on the string
         self.assertRaises(tagcon.TemplateTagValidationError,
                           render,
-                          '{% argument_type age "7b" name "charlie" %}')
+                          '{% argument_type age "7b" %}')
 
-        # will not find a var named alice in the context
+    def test_string_arg(self):
+
+        t = Template('{% argument_type name "alice" %}')
+        self.assertEqual(t.render(Context()), 'alice')
+
+        # i can't remember which one (url perhaps?) but there was a tag that
+        # worked with single quotes but not double quotes and so we check both
+        t = Template("{% argument_type name 'bob' %}")
+        self.assertEqual(t.render(Context()), 'bob')
+
+        # will not find a var named dave in the context
         try:
-            render('{% argument_type age "44" name dave %}')
+            render('{% argument_type name dave %}')
         except TemplateSyntaxError, e:
             self.assertTrue(isinstance(e.exc_info[1], VariableDoesNotExist))
-
-        t = Template('{% argument_type age 19 name "eve" url object %}')
-        object = Link(url='http://bing.com')
-        c = Context({'object': object})
-        self.assertEqual(t.render(c), 'eve 19 <http://bing.com>')
-
