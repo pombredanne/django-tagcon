@@ -380,7 +380,7 @@ class TemplateTag(template.Node):
                 # the encapsulated Variable directly
                 try:
                     value.var.resolve(context)
-                except VariableDoesNotExist, exc:
+                except template.VariableDoesNotExist, exc:
                     exc.var = value.var.var
                     raise
             # resolve the FilterExpression as normal
