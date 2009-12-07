@@ -28,15 +28,22 @@ range of features to make writing template tags easier:
 - Support for yielding strings from the ``render`` method
 
 
+Requirements
+============
+
+Django-Tagcon requires Python 2.5 and the latest formal release of Django
+(1.1.1, at the time of writing).
+
+The library is actually developed against The Onion's internal Django branch,
+which is based upon Django's Subversion trunk; even so, the author considers it
+a bug if something doesn't work in the latest formal Django release.  (Tests,
+once written, should help enforce this.)
+
+
 Installation
 ============
 
 Just drop ``tagcon.py`` somewhere on Python's module path.
-
-Please note that this library is developed against Django's Subversion trunk,
-as that's what The Onion's internal Django branch is based upon; it *should*
-work in the latest formal release of Django, though, and the author considers
-it a bug if it doesn't.
 
 
 Example
@@ -98,6 +105,13 @@ figured it was better to just push it out first and polish later.
 
 In particular, I'm not entirely comfortable with the underscore syntax to
 denote positional arguments; I'm open to better ideas there.
+
+
+Contributing
+============
+
+Just fork, hack, and point me to the branch (preferably on GitHub); if it looks
+good, I'll gladly pull it in.
 
 
 Contact
