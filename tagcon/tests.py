@@ -22,6 +22,16 @@ class KeywordTag(tagcon.TemplateTag):
         self.resolve(context)
         return 'The limit is %d' % self.args.limit
 
+
+class KeywordNoDefaultTag(tagcon.TemplateTag):
+
+    limit = tagcon.IntegerArg()
+
+    def render(self, context):
+        self.resolve(context)
+        return 'The limit is %d' % self.args.limit
+
+
 class NoArgumentTag(tagcon.TemplateTag):
 
     def render(self, context):
@@ -51,7 +61,8 @@ render = lambda t: Template(t).render(Context())
 class TagExecutionTests(TestCase):
 
     def test_no_args(self):
-        """A tag with keyword arguments works with or without the argument"""
+        """A tag with keyword arguments works with or without the argument as
+        long as a default value is set"""
 
         self.assertEqual(Template('{% keyword limit 200 %}').render(Context()),
                          'The limit is 200')
@@ -59,6 +70,20 @@ class TagExecutionTests(TestCase):
         self.assertEqual(Template('{% keyword %}').render(Context()),
                          'The limit is %d' %
                          KeywordTag._keyword_args['limit'].default)
+
+
+        self.assertRaises(tagcon.TemplateTagValidationError,
+                          render,
+                          '{% keyword_no_default %}')
+
+        # what if we change the arg to be null=True?
+        KeywordNoDefaultTag._keyword_args['limit'].null = True
+
+        # now instead of on validation the error moves to when rendering. None
+        # is not an integer
+        self.assertRaises(TemplateSyntaxError,
+                          render,
+                          '{% keyword_no_default %}')
 
     def test_args_format(self):
         """keyword argument syntax is {% tag arg value %}"""
