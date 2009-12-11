@@ -113,6 +113,10 @@ Contributing
 Just fork, hack, and point me to the branch (preferably on GitHub); if it looks
 good, I'll gladly pull it in.
 
+There's more information in the "Contributing" document regarding submissions
+and style.  In particular, contributions *must* be in a Git repository I can
+pull from; I don't accept patch files.
+
 
 Contact
 =======
