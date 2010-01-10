@@ -13,7 +13,7 @@ setup(
     author_email='korpios@korpios.com',
     license='MIT',
     url='http://github.com/korpios/django-tagcon',
-    py_modules=['tagcon'],
+    packages=['tagcon'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
