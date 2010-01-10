@@ -18,6 +18,7 @@ from django.utils.encoding import force_unicode
 
 __all__ = (
     'Arg',
+    'DateArg',
     'DateTimeArg',
     'IntegerArg',
     'ModelInstanceArg',
@@ -25,6 +26,7 @@ __all__ = (
     'TemplateTag',
     'TemplateTagArgumentMissing',
     'TemplateTagValidationError',
+    'TimeArg',
 )
 
 
@@ -516,6 +518,28 @@ class DateTimeArg(Arg):
         if not isinstance(value, datetime.datetime):
             raise TemplateTagValidationError(
                 "Value for '%s' must be a datetime instance" % (
+                    self.name,
+                )
+            )
+        return value
+
+
+class DateArg(Arg):
+    def clean(self, value):
+        if not isinstance(value, datetime.date):
+            raise TemplateTagValidationError(
+                "Value for '%s' must be a date instance" % (
+                    self.name,
+                )
+            )
+        return value
+
+
+class TimeArg(Arg):
+    def clean(self, value):
+        if not isinstance(value, datetime.time):
+            raise TemplateTagValidationError(
+                "Value for '%s' must be a time instance" % (
                     self.name,
                 )
             )

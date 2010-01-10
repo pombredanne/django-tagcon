@@ -1,3 +1,5 @@
+import datetime
+
 from django.test import TestCase
 from django.template import Library, Template, Context, add_to_builtins,\
         TemplateSyntaxError, VariableDoesNotExist
@@ -44,10 +46,13 @@ class ArgumentTypeTag(tagcon.TemplateTag):
     name_ = tagcon.StringArg(null=True)
     url = tagcon.ModelInstanceArg(model=Link, required=False,
                                         null=True)
+    date = tagcon.DateArg(null=True)
+    time = tagcon.TimeArg(null=True)
+    datetime = tagcon.DateTimeArg(null=True)
 
     def render(self, context):
         self.resolve(context)
-        order = 'name age url'.split()
+        order = 'name age url date time datetime'.split()
         return ' '.join([str(self.args[x]) for x in order if self.args[x] is not
                          None])
 
@@ -143,3 +148,22 @@ class TestArgumentTypes(TestCase):
             render('{% argument_type name dave %}')
         except TemplateSyntaxError, e:
             self.assertTrue(isinstance(e.exc_info[1], VariableDoesNotExist))
+
+    def test_datetime_arg(self):
+        t = Template('{% argument_type datetime dt %}')
+        self.assertEqual(t.render(
+                Context({'dt': datetime.datetime(2010, 1, 9, 22, 33, 47)})),
+                         '2010-01-09 22:33:47')
+
+    def test_date_arg(self):
+        t = Template('{% argument_type date d %}')
+        self.assertEqual(t.render(
+                Context({'d': datetime.date(2010, 1, 9)})),
+                         '2010-01-09')
+
+    def test_time_arg(self):
+        t = Template('{% argument_type time t %}')
+        self.assertEqual(t.render(
+                Context({'t': datetime.time(22, 33, 47)})),
+                         '22:33:47')
+
