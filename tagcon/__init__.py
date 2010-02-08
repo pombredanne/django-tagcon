@@ -5,4 +5,4 @@ if sys.version_info[0] != 2 or sys.version_info[1] < 5:
     raise SystemExit("Django-Tagcon requires Python 2.5 or greater")
 del sys
 
-from tagcon.base import *
+from .base import *
