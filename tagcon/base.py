@@ -203,6 +203,8 @@ class TemplateTagBase(type):
 
         attrs['silence_errors'] = getattr(meta, 'silence_errors', False)
 
+        attrs['block'] = getattr(meta, 'block', False)
+
         # wrap render so it can optionally yield strings as a generator, and so
         # we can catch exceptions if necessary
         unwrapped_render = attrs.pop('render')
@@ -280,6 +282,9 @@ class TemplateTag(template.Node):
         # self._raw_args = token.split_contents()[1:]
         self._process_positional_args()
         self._process_keyword_args()
+        if self.block:
+            self.nodelist = parser.parse(('end%s' % (self.name,),))
+            parser.delete_first_token()
 
     def _process_positional_args(self):
         for i, arg in enumerate(self._positional_args):
