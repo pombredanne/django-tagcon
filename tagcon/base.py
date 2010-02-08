@@ -12,7 +12,6 @@ import weakref
 
 from django import template
 from django.conf import settings
-from django.db import models
 from django.utils.encoding import force_unicode
 
 
@@ -548,6 +547,7 @@ class TimeArg(Arg):
 
 class ModelInstanceArg(Arg):
     def __init__(self, *args, **kwargs):
+        from django.db import models
         try:
             model = kwargs.pop('model')
         except KeyError:
