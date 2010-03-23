@@ -9,10 +9,10 @@ setup(
     version='0.1alpha1',
     description="A template tag constructor library for Django.",
     long_description=read('README.rst'),
-    author='Tom Tobin',
-    author_email='korpios@korpios.com',
+    author='Tom X. Tobin',
+    author_email='tomxtobin@tomxtobin.com',
     license='MIT',
-    url='http://github.com/korpios/django-tagcon',
+    url='http://github.com/tomxtobin/django-tagcon',
     packages=['tagcon'],
     classifiers=[
         'Development Status :: 3 - Alpha',

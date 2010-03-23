@@ -121,5 +121,5 @@ pull from; I don't accept patch files.
 Contact
 =======
 
-- Tom Tobin <korpios@korpios.com>
-- "korpios" on GitHub
+- Tom X. Tobin <tomxtobin@tomxtobin.com>
+- "tomxtobin" on GitHub
