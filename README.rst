@@ -2,6 +2,14 @@
 django-tagcon
 =============
 
+.. attention::
+   Tagcon has been abandoned by its original author due to a lack of interest
+   in further development.  Please see TTag_ for a fork of Tagcon that is
+   actively developed.
+
+.. _TTag: https://github.com/lincolnloop/django-ttag
+
+
 Django-Tagcon is a template tag constructor library for Django.  It supports a
 range of features to make writing template tags easier:
 
